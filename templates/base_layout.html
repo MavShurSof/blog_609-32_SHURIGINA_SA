@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Default title{% endblock title %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <h1>𝚔𝚘𝚝𝚒𝚔</h1>
+            </div>
+{#            <div class="burger" onclick="toggleMenu()">☰</div>#}
+            <nav class="main-nav">
+                <div class="burger" onclick="toggleMenu()">☰</div>
+                <ul class="nav-list">
+                    <li><a href="{% url 'homepage' %}" class="{% if request.path == '' %}active{% endif %}">Главная</a></li>
+                    <li><a href="{% url 'homepage' %}" class="{% if request.path == '/articles/' %}active{% endif %}">Статьи</a></li>
+                    
+                    <!-- Добавляем статью только для авторизованных пользователей -->
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'articles:create' %}">Добавить статью</a></li>
+                    {% endif %}
+                    
+                    <li><a href="{% url 'about' %}" class="{% if request.path == '/about/' %}active{% endif %}">О нас</a></li>
+
+                    <!-- Кнопки для авторизации, если не авторизован -->
+                    {% if user.is_authenticated %}
+                        <li>
+                            <form class="form" action="{% url 'accounts:logout' %}" method="POST">
+                                {% csrf_token %}
+                                <button class="auth-button" type="submit">Logout</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item ms-auto">
+                            <a class="btn btn-outline-primary" href="{% url 'accounts:login' %}">Login</a>
+                        </li>
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-primary" href="{% url 'accounts:signup' %}">Sign Up</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <script>
+    function toggleMenu() {
+        document.querySelector('.main-nav ul').classList.toggle('active');
+    }
+    </script>
+
+</body>
+</html>
